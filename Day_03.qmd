@@ -1,0 +1,285 @@
+---
+title: Titanic Wrangling
+jupyter: python3
+---
+
+
+In this practice activity you'll continue to work with the titanic dataset in ways that flex what you've learned about both data wrangling and data visualization.
+
+
+R and Puthon likes Skinny data : Tudey data and use library(tidyverse) for data
+
+```{python}
+#| id: Nr6w8bVCf_NM
+#| id: Nr6w8bVCf_NM
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| outputId: 9387d000-1acd-48a4-963e-9d882b60ae0b
+# Import the titanic dataset here
+import numpy as np
+import pandas as pd
+data_dir = "https://dlsun.github.io/pods/data/"
+df_titanic = pd.read_csv(data_dir + "titanic.csv")
+df_titanic
+```
+
+Seprrate data = in which change NAME = first name and last nimae and title
+
+```{python}
+#| id: cyR3_LwIfzoQ
+#| colab: {base_uri: 'https://localhost:8080/', height: 206}
+#| id: cyR3_LwIfzoQ
+#| outputId: bdd5428a-b7b8-47fa-9eb5-59d2a9cd1fd1
+#usually preferred in case the dataset is large.
+df_titanic.head()
+```
+
+4.3 The “Big Five” Verbs of Data Wrangling
+Data wrangling can involve a lot of different steps and operations to get data into a tidy format and ready for analysis and visualization. The vast majority of these fall under the umbrella one the following five operations:
+
+Select columns/variables of interest
+
+Filter rows/observations of interest
+
+Arrange the rows of a dataset by column(s) of interest (i.e. order or sort)
+
+Mutate the columns of a dataset (i.e. create or transform variables)
+
+Summarize the rows of a dataset for column(s) of interest
+**bold text**
+
+```{python}
+#| id: NPERShlohDqC
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: NPERShlohDqC
+#| outputId: 13b700df-26e9-464b-bedd-1933208790e5
+#This is series
+type(df_titanic["age"])
+```
+
+```{python}
+#| id: fBGfXfEugi7q
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: fBGfXfEugi7q
+#| outputId: c8804693-09e3-4c20-eee0-8715c0498334
+#Use .loc, specifying both the rows and columns. (The colon : is Python shorthand for “all”.)
+
+df_titanic.loc[:, "age"]
+
+# Access the column as you would a key in a dict.
+
+df_titanic["age"]
+
+# Access the column as an attribute of the DataFrame.
+
+df_titanic.age
+```
+
+```{python}
+#| id: ZWAROjtqhI_1
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: ZWAROjtqhI_1
+#| outputId: dac2b144-7d7a-4df7-c70e-ad0f5a2fc3cf
+# Gave the whole dataset
+
+df_titanic[["age"]]
+```
+
+4.3.2.1 Selecting Rows/Observations by Location
+Before we see how to filter (i.e. subset) the rows of dataset based on some condition, let’s see how to select rows by explicitly identifying them.
+
+```{python}
+#| id: ykKiX0iih4Ja
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: ykKiX0iih4Ja
+#| outputId: b88ca2c0-122c-45d9-dc85-14bfb1492ac2
+#We can select a row by its position using the .iloc
+df_titanic.iloc[3]
+```
+
+```{python}
+#| id: oqIIMymqiO8x
+#| colab: {base_uri: 'https://localhost:8080/', height: 112}
+#| id: oqIIMymqiO8x
+#| outputId: 6e35248f-e377-4ec4-acda-23b5a6ae1067
+# We can also select multiple rows by passing a list of positions to .iloc.
+
+df_titanic.iloc[[1, 3]]
+```
+
+Selecting Rows/Observations by Condition
+We’ll often want to filter or subset the rows of a dataset based on some condition. To do this we’ll take advantage of vectorization and boolean masking. **bold text**
+
+```{python}
+#| id: pWyRIY4sitGM
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: pWyRIY4sitGM
+#| outputId: 85656157-daf1-4f7f-a3e6-8281e6f283a3
+# we can compare the values of a variable/column to a particular value
+df_titanic["age"] > 30
+```
+
+```{python}
+#| id: nvtntzI4jF7M
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: nvtntzI4jF7M
+#| outputId: 39337ef1-d7a8-42c9-d04f-fc48f751dbf3
+over_30_tf = (df_titanic["age"] < 15) | (df_titanic["age"] > 30)
+over_30_tf
+```
+
+```{python}
+#| id: FssspqwVjXNc
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: FssspqwVjXNc
+#| outputId: 22135927-0551-4a0f-f583-ed63c15ade54
+
+titanic_only = df_titanic[(df_titanic["age"] > 30) & (df_titanic["gender"] == "female")]
+titanic_only
+```
+
+# Question = With the 2-3 people around you, how would you find the just the names of the males under 20 years of age who survived (in the titanic dataset) with a single line of code?
+
+```{python}
+#| id: yMCpn-uEkCqb
+#| colab: {base_uri: 'https://localhost:8080/', height: 1000}
+#| id: yMCpn-uEkCqb
+#| outputId: 51119d95-b42d-47ab-c84c-8bbf5210e9b5
+titanic_male = df_titanic[(df_titanic["age"] < 20) & (df_titanic["gender"] == "male")& (df_titanic ["survived"]== 1)]
+titanic_male
+```
+
+#Arrange Rows
+As part of exploratory data analysis and some reporting efforts, we will want to sort a dataset or set of results by one or more variables of interest.
+
+```{python}
+#| id: ISbhuYcMllep
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: ISbhuYcMllep
+#| outputId: de3c5d60-4295-4571-8468-7a87a61a7a1a
+# We can do this with .sort_values in either ascending or descending order.
+df_titanic.sort_values(by = ["age"], ascending=False)
+```
+
+# Mutate The variables available to us in our original dataset contain all of the information we have access to, but the best insights may instead come from transformations of those variables.
+
+Transforming Quantitative Variables
+One of the simplest reasons to want to transform a quantitative variable is to change the measurement units
+
+
+```{python}
+#| id: y_KEnpfzm7QI
+#| id: y_KEnpfzm7QI
+#
+df_titanic["age"] = df_titanic["age"] / 10
+```
+
+Transforming Categorical Variables:
+
+Male to Female or Not Feamle
+
+```{python}
+#| id: _6ghlDG-nKK6
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: _6ghlDG-nKK6
+#| outputId: beb85254-2323-4d16-9050-5343c83c1197
+# Female or Not Female
+df_titanic_female = df_titanic["female"] = 1 * (df_titanic["gender"] == "female")
+df_titanic
+```
+
+```{python}
+#| id: rwTt239jojAY
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: rwTt239jojAY
+#| outputId: 05d6e5c7-d7e4-4f76-d13c-57567bd2dc3a
+# Male or Not Male
+df_titanic_male = df_titanic["male"] = 1 * (df_titanic["gender"] == "male")
+df_titanic
+```
+
+```{python}
+#| id: 0stUr64wrZzJ
+#| colab: {base_uri: 'https://localhost:8080/', height: 423}
+#| id: 0stUr64wrZzJ
+#| outputId: 340dd60f-0e48-4b73-ea8c-27acc521d8ee
+df_titanic["type"] = df_titanic["class"].map({
+    "1st": "passenger",
+    "2nd": "passenger",
+    "3rd": "passenger",
+    "victualling crew": "crew",
+    "engineering crew": "crew",
+    "deck crew": "crew"
+})
+
+df_titanic
+```
+
+```{python}
+#| id: WhFfVYuboxwu
+#| colab: {base_uri: 'https://localhost:8080/'}
+#| id: WhFfVYuboxwu
+#| outputId: e67b9180-1d51-425d-9607-df2a43c35ace
+# Summarize Function
+
+df_titanic["age"].mean()
+
+df_titanic["age"].median()
+
+
+df_titanic[["age", "fare"]].mean()
+```
+
+```{python}
+#| id: gdo6ajG-q5R5
+#| colab: {base_uri: 'https://localhost:8080/', height: 300}
+#| id: gdo6ajG-q5R5
+#| outputId: 03183083-f22e-430b-b298-44b35bc7d3a2
+# We can ask for a slightly more comprehensive description using .describe()
+df_titanic["age"].describe()
+
+df_titanic.describe()
+```
+
+```{python}
+#| id: gu56JRTBrH2b
+#| colab: {base_uri: 'https://localhost:8080/', height: 143}
+#| id: gu56JRTBrH2b
+#| outputId: 247d8b76-e6e6-40be-a387-e1d128ff427c
+# We can enhance numerical summaries with .groupby(), which allows us to specify one or more variables that we’d like to group our work by.
+
+df_titanic[["age", "survived"]].groupby("survived").mean()
+```
+
+# This does not tell us how gender interacts with survival. To do that, we need to produce a cross-tabulation, or a “cross-tab” for short. (Statisticians tend to call this a contingency table or a two-way table.)
+
+```{python}
+#| id: RmrGFkI6sO4w
+#| colab: {base_uri: 'https://localhost:8080/', height: 143}
+#| id: RmrGFkI6sO4w
+#| outputId: 9ed1ba24-ea50-4eaa-9028-83d1169851eb
+# Helps for the reasrch question and help you nput to articultae the final result
+
+pd.crosstab(df_titanic["survived"], df_titanic["gender"])
+
+```
+
+```{python}
+#| id: vUIQzgaosYST
+#| colab: {base_uri: 'https://localhost:8080/', height: 143}
+#| id: vUIQzgaosYST
+#| outputId: 865262bf-681d-4aec-c7c7-386ec4f9640c
+# To get probabilities instead of counts, we specify normalize=True.
+
+pd.crosstab(df_titanic["survived"], df_titanic["gender"], normalize=True)
+```
+
+```{python}
+#| id: pSc8fSFctZGD
+#| colab: {base_uri: 'https://localhost:8080/', height: 143}
+#| id: pSc8fSFctZGD
+#| outputId: 6b6533eb-9956-4658-b762-6adb19747128
+pd.crosstab(df_titanic["survived"], df_titanic["gender"], normalize='columns')
+```
+
+## 1. Filter the data to include passengers only. Calculate the joint distribution (cross-tab) between a passenger's class and where they embarked.
+
